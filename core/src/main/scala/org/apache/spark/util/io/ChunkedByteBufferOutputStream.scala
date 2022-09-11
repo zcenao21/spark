@@ -18,10 +18,8 @@
 package org.apache.spark.util.io
 
 import java.io.OutputStream
-import java.nio.ByteBuffer
-
+import java.nio.{Buffer, ByteBuffer}
 import scala.collection.mutable.ArrayBuffer
-
 import org.apache.spark.storage.StorageUtils
 
 /**
@@ -109,12 +107,12 @@ private[spark] class ChunkedByteBufferOutputStream(
       }
       if (position == chunkSize) {
         ret(lastChunkIndex) = chunks(lastChunkIndex)
-        ret(lastChunkIndex).flip()
+        ret(lastChunkIndex).asInstanceOf[Buffer].flip()
       } else {
         ret(lastChunkIndex) = allocator(position)
-        chunks(lastChunkIndex).flip()
+        chunks(lastChunkIndex).asInstanceOf[Buffer].flip()
         ret(lastChunkIndex).put(chunks(lastChunkIndex))
-        ret(lastChunkIndex).flip()
+        ret(lastChunkIndex).asInstanceOf[Buffer].flip()
         StorageUtils.dispose(chunks(lastChunkIndex))
       }
       new ChunkedByteBuffer(ret)
